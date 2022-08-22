@@ -3,17 +3,23 @@ package base;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
@@ -26,9 +32,10 @@ import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-
 
 public class BaseInit {
 	public static Properties storage = null;
@@ -40,14 +47,48 @@ public class BaseInit {
 
 	String driverPath = ("D:\\Tathya\\selenium\\chromedriver_win32\\chromedriver.exe");
 
+	@BeforeSuite
+	public void base() throws Exception {
+		// --Opening Chrome Browser
+		DesiredCapabilities capabilities = new DesiredCapabilities();
+		WebDriverManager.chromedriver().setup();
+		ChromeOptions options = new ChromeOptions();
 
-  @BeforeSuite
-  public void base() throws Exception {
-		System.out.println("lunching chrome browser");
-		System.setProperty("webdriver.chrome.driver", driverPath);
-		driver = new ChromeDriver();
+		// options.addArguments("headless");
+		options.addArguments("--incognito");
+		options.addArguments("--test-type");
+		options.addArguments("--no-proxy-server");
+		options.addArguments("--proxy-bypass-list=*");
+		options.addArguments("--disable-extensions");
+		options.addArguments("--no-sandbox");
+		// options.addArguments("window-size=1036,776");
+
+		// options.addArguments("--start-maximized");
+		String downloadFilepath = System.getProperty("user.dir") + "\\src\\main\\resources";
+		HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
+		chromePrefs.put("profile.default_content_settings.popups", 0);
+		chromePrefs.put("download.prompt_for_download", "false");
+		chromePrefs.put("safebrowsing.enabled", "false");
+		chromePrefs.put("download.default_directory", downloadFilepath);
+		options.setExperimentalOption("prefs", chromePrefs);
+		capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+		capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+		capabilities.setPlatform(Platform.ANY);
+
+		// options.addArguments("--headless");
+		//options.addArguments("window-size=1936,1066");
+
+		driver = new ChromeDriver(options);
+
+		// Default size
+		Dimension currentDimension = driver.manage().window().getSize();
+		int height = currentDimension.getHeight();
+		int width = currentDimension.getWidth();
+		System.out.println("Current height: " + height);
+		System.out.println("Current width: " + width);
+		System.out.println("window size==" + driver.manage().window().getSize());
 		startTest();
-		
+
 		driver.get("http://10.20.104.71:8072/");
 		String logFilename = this.getClass().getSimpleName();
 		logger = Logger.getLogger(logFilename);
@@ -58,35 +99,37 @@ public class BaseInit {
 		Thread.sleep(2000);
 		driver.get("http://10.20.104.71:8072/");
 		Login("tathya", "tathya");
-		
+
 		// Go to Operation --> TaskLog
 		Thread.sleep(5000);
-		  WebDriverWait wait = new WebDriverWait(driver, 50);// wait time
+		WebDriverWait wait = new WebDriverWait(driver, 50);// wait time
 
 		Actions actions = new Actions(driver);
-		//wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("a_operations"))));
-        WebElement operation = wait.until(ExpectedConditions.elementToBeClickable(By.id("a_operations")));
-        Thread.sleep(3000);
-		//new WebDriverWait(driver, 8).until(ExpectedConditions.visibilityOf(driver.findElement(By.id("a_operations"))));
+		// wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("a_operations"))));
+		WebElement operation = wait.until(ExpectedConditions.elementToBeClickable(By.id("a_operations")));
+		Thread.sleep(3000);
+		// new WebDriverWait(driver,
+		// 8).until(ExpectedConditions.visibilityOf(driver.findElement(By.id("a_operations"))));
 		actions.moveToElement(operation).click().build().perform();
-		//new WebDriverWait(driver, 8).until(ExpectedConditions.visibilityOf(driver.findElement(By.id("a_TaskLog"))));
-		new WebDriverWait(driver, 8).until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("a_TaskLog"))));
+		// new WebDriverWait(driver,
+		// 8).until(ExpectedConditions.visibilityOf(driver.findElement(By.id("a_TaskLog"))));
+		new WebDriverWait(driver, 8)
+				.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("a_TaskLog"))));
 		actions.click(driver.findElement(By.id("a_TaskLog"))).build().perform();
-		
-		
+
 		// Move to ServiceDetail Class
 		ServiceDetail.SvcDetail();
 	}
-  @BeforeMethod
-  public void testMethodName(Method method) {
 
+	@BeforeMethod
+	public void testMethodName(Method method) {
 
+		String testName = method.getName();
+		test = report.startTest(testName);
 
-     String testName = method.getName();
-      test = report.startTest(testName);
+	}
 
- }
-  public static void startTest() {
+	public static void startTest() {
 		// You could find the xml file below. Create xml file in your project and copy
 		// past the code mentioned below
 
@@ -103,6 +146,7 @@ public class BaseInit {
 		report.endTest(test);
 		report.flush();
 	}
+
 	public static String getScreenshot(WebDriver driver, String screenshotName) throws IOException {
 
 		TakesScreenshot ts = (TakesScreenshot) driver;
@@ -127,7 +171,7 @@ public class BaseInit {
 		FileUtils.copyFile(source, finalDestination);
 		return destination;
 	}
-	
+
 	@AfterMethod
 	public void getResult(ITestResult result) throws Exception {
 
@@ -152,47 +196,45 @@ public class BaseInit {
 			test.log(LogStatus.SKIP, "Test Case Skipped is " + result.getName());
 		}
 	}
-  @AfterSuite
-  public void logout() throws InterruptedException {
-		JavascriptExecutor jse = (JavascriptExecutor)driver;
-		
 
-		//Logout
-		 WebElement logout = driver.findElement(By.partialLinkText("LOGOUT"));
-		 jse.executeScript("arguments[0].click();",logout);
-	       System.out.println("Logout");
-		   //logger.info("Logout");
+	@AfterSuite
+	public void logout() throws InterruptedException {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+		// Logout
+		WebElement logout = driver.findElement(By.partialLinkText("LOGOUT"));
+		jse.executeScript("arguments[0].click();", logout);
+		System.out.println("Logout");
+		// logger.info("Logout");
 //		   
 //		
-	       Thread.sleep(5000);
-			report.flush();
-			Thread.sleep(5000);
-			endTest();
-			
+		Thread.sleep(5000);
+		report.flush();
+		Thread.sleep(5000);
+		endTest();
+
 		Thread.sleep(5000);
 		driver.close();
-		
-		  
-		
-	    System.out.println("====Sending Email====");
-	    //logger.info("====sending Email====");
-	    
-	    msg.append("*** This is automated generated email and send through automation script ***" + "\n");
-	    msg.append("Please find attached file of Report and Log");
-	    
-	 
-	    String subject = "Selenium Automation Script: Connect Services";
-	    String File = "C:\\Users\\tgandhi\\Connect\\Connect_order\\Report\\ExtentReport\\ExtentReportResults.html";
 
-	    try {
-	    	// /kunjan.modi@samyak.com, pgandhi@samyak.com,parth.doshi@samyak.com
-	    	Email.sendMail("ravina.prajapati@samyak.com,tathya.gandhi@samyak.com,asharma@samyak.com", subject,
-	    	msg.toString(), File);
-	}catch(Exception ex) {
-		logger.error(ex);
+		System.out.println("====Sending Email====");
+		// logger.info("====sending Email====");
+
+		msg.append("*** This is automated generated email and send through automation script ***" + "\n");
+		msg.append("Please find attached file of Report and Log");
+
+		String subject = "Selenium Automation Script: Connect Services";
+		String File = "C:\\Users\\tgandhi\\Connect\\Connect_order\\Report\\ExtentReport\\ExtentReportResults.html";
+
+		try {
+			// /kunjan.modi@samyak.com, pgandhi@samyak.com,parth.doshi@samyak.com
+			Email.sendMail("ravina.prajapati@samyak.com,tathya.gandhi@samyak.com,asharma@samyak.com", subject,
+					msg.toString(), File);
+		} catch (Exception ex) {
+			logger.error(ex);
+		}
 	}
-}
-  public void Login(String username, String password) throws InterruptedException {
+
+	public void Login(String username, String password) throws InterruptedException {
 		driver.findElement(By.id("inputUsername")).sendKeys(username);
 		driver.findElement(By.id("inputPassword")).sendKeys(password);
 		WebElement Signin = driver.findElement(By.xpath("//*[@id=\"btnLogin\"]"));
