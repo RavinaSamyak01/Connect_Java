@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2022-08-18T18:50:29 IST" name="Default suite" finished-at="2022-08-18T18:53:51 IST" duration-ms="202088">
+    <groups>
+    </groups>
+    <test started-at="2022-08-18T18:50:29 IST" name="Default test" finished-at="2022-08-18T18:53:51 IST" duration-ms="202088">
+      <class name="base.ServiceDetail">
+        <test-method is-config="true" signature="base()[pri:0, instance:base.ServiceDetail@c33b74f]" started-at="2022-08-18T18:46:44 IST" name="base" finished-at="2022-08-18T18:50:29 IST" duration-ms="224506" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- base -->
+        <test-method is-config="true" signature="testMethodName(java.lang.reflect.Method)[pri:0, instance:base.ServiceDetail@c33b74f]" started-at="2022-08-18T18:50:29 IST" name="testMethodName" finished-at="2022-08-18T18:50:29 IST" duration-ms="5" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public static void base.ServiceDetail.SvcDetail() throws java.lang.Exception]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testMethodName -->
+        <test-method signature="SvcDetail()[pri:0, instance:base.ServiceDetail@c33b74f]" started-at="2022-08-18T18:50:29 IST" name="SvcDetail" finished-at="2022-08-18T18:53:50 IST" duration-ms="201374" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- SvcDetail -->
+        <test-method is-config="true" signature="getResult(org.testng.ITestResult)[pri:0, instance:base.ServiceDetail@c33b74f]" started-at="2022-08-18T18:53:50 IST" name="getResult" finished-at="2022-08-18T18:53:51 IST" duration-ms="647" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[[TestResult name=SvcDetail status=SUCCESS method=ServiceDetail.SvcDetail()[pri:0, instance:base.ServiceDetail@c33b74f] output={null}]]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getResult -->
+        <test-method is-config="true" signature="logout()[pri:0, instance:base.ServiceDetail@c33b74f]" started-at="2022-08-18T18:53:51 IST" name="logout" finished-at="2022-08-18T18:54:07 IST" duration-ms="15889" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- logout -->
+      </class> <!-- base.ServiceDetail -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>

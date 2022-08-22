@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Connect_order">
+
+  <test thread-count="5" name="ServiceDetail">
+		<classes>
+			<class name="base.ServiceDetail"></class>
+		</classes>
+	</test>
+      
+
+</suite> <!-- Failed suite [Failed suite [Default suite]] -->
